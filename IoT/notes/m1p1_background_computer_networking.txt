@@ -1,0 +1,234 @@
+Internet Architecture: 
+	Domain Name System (DNS)
+		- database that maps human readable domain names to IP addresses
+		- largest database on earth
+	
+	Routers: 
+		- allow multiplex traffic (direct signals from one host to another)
+		- challenges:
+			- what topology to use
+			- how to find paths
+			- how to identify destinations
+		IP prefixes: allow routers to share information with each other about what addresses they are connected to
+			- specifically, routers advertise address blocks (aka 'prefixes)
+			- ex 1: "4.0.0.0/8", which says that it broadcasts to addresses that start with 4, where the first 8 bits are set, and the other 24 are wildcards
+			- ex 2: "23.2.0.0/24" advertises that it can reach addresses that start with 23.2.0, and the first 24 bits are set, with only 8 wildcards
+		Routing Tables: allow routers to store information about what prefixes other routers it's connected to can reach, and how many 'hops' it takes to get to that router. 
+			Example table entry:
+				Prefix: 4.0.0.0/8  (what addresses can be reached)
+				IF: D (which router D can do this)
+				Hops: 1 (how many steps away that router is)
+		- thus, when a router wants to send a packet to a destination, it puts that destination as a header to the packet, then uses its table to determine how to send it there
+		
+	Router Interfaces
+	
+	Ethernet - uses self-clocking Manchester encoding scheme to ensure one transition per clock 
+	
+	Routing:
+		- Internet is made up of several autonomous systems (AS's), which runs an intra-domain routing protocol (Interior Gateway Protocol, or IGP) internally
+			- responsible for figuring out routes in that autonomous system 
+			- establishes routes to internal prefixes and between routers
+			- Example IGP protocol within ISPs: OSPF, IS-IS, RIP
+		and an inter-domain routing protocol 
+			- responsible for linking to neighboring AS's
+			- establishes routes to external destinations 
+			- Protocol: Border Gateway Protocol (BGP)
+		- When there are multiple pathways from a router that use different levels of resources from each ISP's AS, the system which controls the router will make the decision of which to send it through (generally the competitor's system). This is called "hot potato routing"
+	
+	VLANs
+		- Isolate traffic at layer 2 (datalink/MAC)
+		- Put an overlay network on top of a LAN, which represents a segment of that network 
+		- Then, at layer 2, these separate overlays cannot interface with each other while staying at layer 2 (datalink/MAC), they have to call up to layer 3 and use IP to connect to each other like any other disconnected LANs, which is okay because our Firewall security usually lives at layer 3, and it's good practice to isolate protocols like Firewall to a specific layer
+		- Each VLAN is like a LAN, it corresponds to an IP subnet, it is a single broadcast domain (for the purpose of packet flooding)
+		- Ethernet packet headers will have a special VLAN tag that denotes what VLAN it's on
+		- Bridges (ethernet switches) will then forward packets with a specific VLAN tag only on subnets on corresponding VLAN
+	
+	Delivery models: Given a network and a source, there are different delivery models to deliver data from the source to the other nodes in the network 
+		Unicast: One source, one destination
+			- web cloud
+			- streaming
+		Broadcast: One source, all destinations in network
+			- disseminate control information
+				- like if one drone in a swarm senses something, it can broadcast that info to the other drones in the IoT network
+				- bluetooth will use this to figure out what local objects are around that can offer services 
+		Multicast: One source, multiple (prespecified) destinations
+			- uses backbone or dissemination tree 
+				- One way to do this is with source-specific trees:
+					- Each source is the root of its own tree 
+					- One tree per source 
+					- tree might consist of shortest paths to each receiver
+				- Another option is to use a Shared Tree
+					- one tree is used by all members of the group 
+					- that tree is rooted at one one 'rendezvous point' (RP)
+					- requires less state to maaintain, but it is hard to pick a tree that's 'good' for every node 
+					- useful if there are nodes that don't want to be active all the time 
+					- because a perfect 'steiner tree', the minimum-weighted tree connecting only the multicast members is NP-hard, we instead...
+					- calculate a minimum spanning tree that spans the network
+			- used in some ISP infrastructures for content delivery 
+				- example: ISP can stream a television show to specific nodes in the network that are 'on that channel' rather than broadcasting it to all nodes
+		Anycast: One source, route to "best" destination (using different metrics)
+			- define a destination set 
+			- tell network to decide which destination is best 
+			- used in DNS (we don't care which DNS server is used, but the network will determine which is best)
+			- used in IoT, like if you have many sensors and only need a reading from some subset, you can ask the network to get you back a response from "any" of them 
+
+IoT Protocols: 
+	- We can use TCP/IP for IoT, however, IoT has some unique challenges:
+		- very tight power/compute constraints
+		- need to work closely with wireless 
+		- need to automatically address applications, not just interfaces
+	- Companies will often create their own new protocols to secure market control 
+		- bad for innovation but good for security 
+	- These different stacks are similar to TCP/IP, but also include more emphasis on application layer, as well as security
+		
+	Short/Medium Range:
+		Bluetooth (Kbps)
+			- Low Power Wireless Personal-Area Network
+		Bluetooth Low Energy (BLE) (Kbps)
+			- Low Power Wireless Personal-Area Network
+			- Application Layer 
+				- defines different classes of objects 
+		Zigbee (Kbps)
+			- Low Power Wireless Personal-Area Network
+			- Application layer 
+				- define different standardized classes of objects which different vendors will conform to (use a single API)
+				- defines application objects, database objects 
+			- Network layer 
+				- defines security management, including authentication
+		WiFi Halow (Mbps)
+			- Low Power Wireless Local-Area Network
+		WiFi (Gbps)
+			- Wireless Local Area Network
+	
+	Long Communication Range (span miles):
+		LoRa
+			- Low Power Wide-Area Network 
+		LTE-M
+			- Low Power Wide-Area Network 
+		NB-IoT
+			- Low Power Wide-Area Network 
+
+IoT Applications: 
+	Environmental monitoring
+	Smart homes/buildings/cities
+	
+IP Address:
+	- 32 bit value in dotted decimal notation, which are assigned baed on topology
+	- lives in network layer 
+	- hierarchically-assigned 
+	- location dependent
+	- similar to postal address
+	- needs to be manually configured (assigned by DHCP or by IoT network engineer, etc)
+	- not portable, must change if host changes network 
+	- used to get packet to destination IP subnet
+	
+MAC Address:
+	- lives in datalink layer 
+	- fixed
+	- flat (location independent)
+	- like a social security number 
+	- requires no configuration
+	- portable, can stay the same as host moves
+	- used to get packet to destination on same LAN
+
+Media: copper, optical, wireless
+	
+Topology:
+	Full Mesh 
+		- every cpu connected to every other, extremely inefficient (exponential)
+		- only used in niche small networks 
+		
+Protocol: sequence of communications used to conduct some activity in a distributed system
+	- protocols are widely used in network 
+		- ex: figure out how fast to send data, discover paths to destinations, replicate data, encode data into transmittable patterns, etc
+	- they are often organized into 'suites' or 'stacks', as protocols often call down/up to other protocols to meet a certain objective
+		- example: TCP/IP suite, Infiniband, Bluetooth 
+		- OSI model: defines how you should implement a protocol stack for networks (see question 2 below)
+	- networks have many protocols, ex:
+		Routing protocols: compute pahts through networks 
+		Transport protocols: figure out how fast to send data 
+		Encryption protocols: encrypt messages
+		Address resolution protocols: figure out who has an address 
+		Service discovery protocols: figure out what kinds of things the network can do
+	Protocol Encapsulation: each layer of protocol stack encapsulates data passed to it 
+		- in each layer of the protocol stack, the data is wrapped (put a header at the beginning of the packet) 
+		- in each forwarding layer, the data is inspected only at that encapsulation layer 
+			- switching only looks at ethernet header, routing only looks at IP header, etc
+		
+		1. Application Layer: data is generated, and passed to transport layer via system call to kernel
+		2. Transport layer: takes data, processes it, and appends header with TCP flags, acknowledgment information, port numbers, stuff that is usefull for transporting the packet  
+		3. Network Layer: takes data and appends info such as destination and sender IP address 
+		4. Datalink & Physical Layer: appends destination and sender MAC address information 
+		5. Then the packet is sent out onto the network 
+
+What are the steps that take place to allow a data packet to be routed between two computers on the internet?
+
+	1. Possibility 1 - Connect hosts with wire, and modulate signal between them in digital voltage changes to send pulses of electricity, which will be decoded.
+		- inefficient
+	2. Possibility 2 - instead send sinewave carrier signal, and vary phase, frequency, and amplitude to encode information more efficiently
+		- actually used 
+	
+	Example: reach youtube.com 
+		1. Robert's computer sends a request to the local DNS server for the ip address to youtube.com
+			- if the local DNS server knows it (has it cached), it will send it back
+			- otherwise it will send back the address to the .com authoritative DNS server, which should have it
+			- if that server does not have it, it will repeat this process, sending it to the authoritative DNS server for youtube.com, which should know it 
+		2. Robert's computer then makes a request to youtube.com by sending it to his router, which will employ it's Routing tables to get the packet (with the ip address destination in the header) to it's location
+		
+
+
+What are the seven architectural layers of the Internet, and how do functions at each layer work together to allow end-to-end communication?
+
+	7. Application Layer - application that you're implementing
+	6. Presentation layer - display/represent data
+	5. Session layer - maintain connection between two end points
+	4. Transport layer - send data, ensure it gets across, guarantee reliability
+		Layer 4 load balancer: balance load at layer 4
+	3. Networking layer - deliver packets to destination
+		Router: performs forwarding at layer 3
+			- only looks at IP header
+			- forwards across the entire Internet 
+			- proactive, construct paths actively.
+			- assign hosts addresses 
+			- routers are assigned prefixes 
+			- send control messages to neighbors, which remember the best routes, and send that info back out to their neighbors, until all routers have these tables 
+			- makes Routing Tables that must be stored in fast RAM for quick access
+	2. Datalink/MAC layer - trasnport data across a single LAN
+		Switch: performs forwarding at layer 2
+			- only looks at ethernet header
+			- forwards across a single LAN (single broadcast domain)
+			- Example:
+				- instead of creating paths, a host just sends a datapacket to its connected switch
+				- that packet is then broadcast to other nodes in the network (flooded out)
+				- then the packet will eventually hit the destination
+				- switches can optionally then also remember (cache) the address of the SOURCE of a sent packet, to 'learn' what direction that packet came from. Then, the next time it has to SEND a packet to that address, it can simply send it back along that path.
+					- this is not necessary, but can make things a bit more efficient
+	1. Physical layer - encode data into bit patterns 
+	
+	
+TCP/IP Model:
+	Application (encompasses layers 7-5 of OSI model)
+		- uses data protocols like IMAP, HTTP, H.323, RDP, SSH 
+		- uses addresses: 
+			URLs: identify resources (files, content)
+			Domain names: identify groups of computers under single administrative control 
+	Transport 
+		- uses data protocols like TCP, UDP, QUIC, SCTP
+			- these protocols take data from higher layers and encode/encapsulate it to be sent across network
+		- uses address:
+			Port numbers: address to identify application running on the remote host, since modern computers can run multiple applications at the same time 
+				- 80: for http traffic 
+				- 22: for SSH traffic 
+				- 143: for IMAP 
+	Networking
+		- uses data protocols like IPv4, IPv6
+			- how to chop up data into packets to be sent over a network
+		- uses control protocols like BGP, OSPF, IS-IS, BFD, ICMP
+			- routing protocols to discover paths
+		- uses addresses: IP address - identifies where a computer's interface attaches to the internet 
+	Datalink & Physical (encompasses layers 2-1 of OSI model)
+		- uses data protocols like Ethernet, Wireless Ethernet (WiFi, 802.11)
+			- how to take IP packets and send them over a LAN and encode them as series of bits
+		- uses control protocols like ARP, DHCP
+			- discover addressing info and allocate that information to hosts
+		- uses MAC addresses: bound to a specific computer interface, don't change over time 
