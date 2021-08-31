@@ -1,0 +1,159 @@
+Electronics concepts: 
+	Voltage - how hard electrons are being pushed around a circuit
+	Current - how much electricity is flowing through a component/wire per unit time
+	Resistance - the amount that a component slows down the current
+	Capacitance - amount of charge that can be stored in a component/circuit
+	Phase
+	Pulse-width modulation - controls power by rapidly turning on/off, cheaper than using other components to change the voltage
+		- follows 'duty cycle' that tells the circuit how often to stay on (e.g. 25% duty cycle is 'on 25% of the time)
+
+Common components: 
+	Resistor - reduce flow of current
+		Uses:
+		- protect components from getting too much current
+		- increase or decrease voltage
+		- measuring things (as some resistors are sensitive to light or temp)
+		Key metrics:
+		- resistance: how much they resist current (Ohms)
+		- tolerance: how accurate their resistance rating is (%)
+		- power rating: how much current they can handle (Watts)
+		- maximum voltage: how much voltage difference differences across input/output they can handle
+	Capacitor - stores electrical charge 
+		Uses:
+		- temporarily hold charge 
+		- smooth out noise in a circuit
+		- measurement (humidy, pressure, touch)
+		Key metrics:
+		- capacitance: how much charge it can store (farads)
+		- tolerance: how accurate capacticance is (%)
+		- max voltage: how much voltage they can handle
+		- leakage current: amount of current that leaks through dialectric
+		- equivalent series resistance (ESR): capacitors aren't perfect and have tiny amount of resistance
+	Diode: allows current to go forward, but not backward
+		Uses:
+		- reverse current protection
+		- rectifying singles (pulling out positive parts of signal)
+		- also used as sensors
+		Key metrics:
+		- maximum forward current: how much current can go through in the forward direction (amps)
+		- maximum reverse voltage (breakdown voltage): how much voltage an be withstood in reverse direction
+		- maximum forward voltage: voltage difference between input/output when current going through forward direction (ideally should be zero, no resistance to current)
+	Transistor: acts like a switch, when voltage is applied to one wire, forms connection other two wires
+		Uses:
+		- acting like a switch
+		- amplifying a signal
+		Types:
+		NPN - applying current turns on circuit
+		PNP - applying current turns off circuit
+	Sensors:
+		Color sensor
+			- detects range of visible colors via 1 pixel camera
+		Hall Effect Sensor
+			- vary output voltage in response to magnetic field, can pair with magnet for some applications like positioning
+			- measure wheel/rotation speed, proximity sensing
+		Microphone
+			- convert sound into electrical signal
+		Accelerometer
+			- measure physical acceleration experienced by an object
+		Gyroscope/tilt sensor:
+			- measures rotation (pitch/yaw/roll)
+		Gas sensor
+			- detect make up of air, obviously there are many variations
+		Infrared sensor
+			- converts infrared light into electrical signal
+		Proximity/distance sensor:
+			- measures distance to moving or stationary objects
+			- variants: ultrasonic, laser, infrared
+		Hygrometer:
+			- measure humidity/water content
+		Touch sensor:
+			- use capacitance to detect when anything conductive or has a dialectric different from air, like in touchscreens or fingerprint identification
+		Photoresistor: 
+			- measure intensity of light
+		Load cell:
+			- measures force/weight
+		Flow sensor:
+			- measures flow rate (and thereby volume) of gas or fluids
+		Anemometer:
+			- measures wind speed
+		Temperature sensor:
+			- measures temperature
+		Camera:
+			- captures video or pictures
+		Electronic nose: 
+			- measures chemical concentrations behind scents/smells
+		Tactile sensor:
+			- more advanced touch sensor, determines texture, stiffness, coefficient of friction, thermal conductivity
+		Blood gas/sugar sensor:
+			- measures composition of blood, including amount of arterial gases
+	Amplifier
+	Transformer - takes in a voltage level and increase/decrease it, works for alternating current voltage
+	Voltage regulator - keeps voltage within a small range
+	Buck convertor - steps down DC voltage
+	Boost convertor - steps up DC voltage
+	Semiconductor - material that acts as an insulator except where it has been 'doped' and then acts as a conductor. Allows you to build extremely small circuits by drawing your circuits into the material directly. Silicon is a classic.
+
+Common ICs: 
+	Timer
+	Logic gate
+	Shift register
+	A/D and D/A converters
+	Motors: 
+		- brush motor has an electromagnetic spinning, powered by a metal brush that transfers current to it
+			- cheap, good torque at low RPM, simple to control
+			- brushes wear out over time, makes noise in a circuit 
+		- brushless motor has an electromagnetic on the outside, external can is what rotates
+			- more power, reliable, high speed
+			- requires advanced controller to operate, poor torque at low RPM
+		- stepper motor many small internal 'teeth' form individual magnest, pulled to external electromagnets, meant to make motor only move something to very precise positions with high reliablity
+			- small steps limit top speed, high loads/speed may cause skipped steps, continously draws maximum curren
+		- generator: run brushed motor via external force to generate current
+		- servo: like stepper but less precise and more epxensive, higher torque/speed
+		- torque motor: can operate indefinitely when stalled, applying constant torque
+		- linear motor (unrolled motor): produces straight-line movement 
+		- vibration motors: unbalance weight attached to poles (phones, pagers, toys)
+
+Power
+	Combining current sources:
+		- in series will stack up their voltage, but keep the same capacity (e.g. 4 1.5v, 1800mAh batteries will generate 6V @ 1800 mAh)
+		- in parallel voltage will stay the same, but capacity will quadruple (e.g. 4 1.5v, 1800mAh batteries will generate 1.5v * 7200 mAh)
+
+Suppose I was going to build a smart tennis shoe that kept track of the user's running speed, sweat, and other biodata. What sensors would I use, what ICs would I use, and how would I connect them together?
+
+	Accelerometer
+	Hygrometer
+	Temperature Sensor
+
+What are some common circuits used in IoT devices, and how do they work?
+
+	Current-Limiting Resistor
+		- Components can accidentally draw too much current
+		- Current-limiting resistors protect your components
+	Voltage Shifter
+		- Voltage divider
+		- voltage regulator
+		- voltage level shifter
+	Filter Capacitor
+		- place capacitor between terminal and ground to protect from noise
+		- rule of thumb: 0.1 microFarad - 10microFarad is pretty safe if you're just doing low voltage logic
+	Eliminating Noise from disconnection (pull-down resistors)
+		- eliminates noise from an open circuit (that has latent noise from the air or environment)
+		- makes circuit more stable
+	Amplify what you want to hear (operation amplifiers / op-amp)
+		- two inputs, one output, amplifies difference between inputs
+		- good op-amps reject noise (common-mode voltages)
+		- widely used to amplify inputs: audio amplifies, sensors, radio NICs
+	Transistor Switches
+		- allow an input to be controlled by another input
+		- useful when we need to do conditional logic
+		- useful when using logi to drive much larger voltage/current source
+		
+
+If I want to build an IoT device, what are the different electronic components I can choose from? 
+
+	Energy Source:
+		Batteries, power adapters, or energy harvestors
+
+How do I select between electronic components of the same type?
+
+	Think about what metrics are important to you, what values you care about for those metrics, then pick components that meet your specifications.
